@@ -1,0 +1,36 @@
+version: '3'
+
+silent: true
+
+vars:
+  PYTHON_VERSION:
+    sh: "cat .python-version"
+
+tasks:
+  build:
+    desc: "Build the builder image"
+    cmds:
+      - docker build -t local/comfyture-builder:latest -f Dockerfile .
+
+  compile:
+    desc: "Compile wheels"
+    deps:
+      - build
+    cmds:
+      - |
+        docker run --rm -it --name comfyture-builder --runtime nvidia \
+          -v ./wheels:/home/ubuntu/wheels \
+          local/comfyture-builder:latest scripts/all.sh
+
+  lock:
+    desc: "Lock requirements"
+    cmds:
+      - echo "Installing python..."
+      - uv python install {{.PYTHON_VERSION}}
+      - echo "Compiling requirements..."
+      - |
+        uv pip compile \
+          --python {{.PYTHON_VERSION}} \
+          --index-strategy "unsafe-best-match" \
+          --format "pylock.toml" \
+          --output-file "pylock.toml" requirements.in
