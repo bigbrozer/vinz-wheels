@@ -38,3 +38,5 @@ RUN set -eu \
     && uv pip sync --compile-bytecode --preview pylock.toml
 
 COPY --chmod=0755 ./scripts ./scripts/
+
+ENV BUILD_INFO="cu130torch210"
