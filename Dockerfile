@@ -39,4 +39,4 @@ RUN set -eu \
 
 COPY --chmod=0755 ./scripts ./scripts/
 
-ENV BUILD_INFO="cu130torch212"
+ENV BUILD_INFO="cu130torch213"
